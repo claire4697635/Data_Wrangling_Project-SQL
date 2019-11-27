@@ -1,11 +1,7 @@
 ---
-title: "QBS181_Final"
+title: "QBS181_Final_ClaireWang"
 output: html_document
 ---
-
-QBS 181 Final
-
-Author: Claire Wang
 
 
 Question 1 (a):
@@ -14,22 +10,15 @@ setwd("~/QBS 181")
 library(readr)
 hypertension <- read_csv("~/QBS 181/IC_BP_v2.csv")
 
-
-# Convert BP alerts to BP status
 colnames(hypertension)[4] <- "BPStatus"
 colnames(hypertension)
 head(hypertension, n=10L)
 ```
 Question 1 (b):
 ```{r}
-
-# convert the individual's blood pressure status from characters to binary number 0 or 1
-
-# controlled BP status
 hypertension$BPStatus[hypertension$BPStatus == "Hypo1"] <- 1
 hypertension$BPStatus[hypertension$BPStatus == "Normal"] <- 1
 
-# uncontrolled BP status
 hypertension$BPStatus[hypertension$BPStatus == "Hypo2"] <- 0
 hypertension$BPStatus[hypertension$BPStatus == "HTN1"] <- 0
 hypertension$BPStatus[hypertension$BPStatus == "HTN2"] <- 0
@@ -37,10 +26,8 @@ hypertension$BPStatus[hypertension$BPStatus == "HTN3"] <- 0
 
 str(hypertension)
 
-# convert the data type of BPStatus from char to num
 hypertension$BPStatus <- as.numeric(hypertension$BPStatus)
 
-# test how many missing values BPStatus have
 sum(is.na(hypertension$BPStatus))
 
 head(hypertension,n=10L)
@@ -55,12 +42,10 @@ library(sqldf)
 myconn<-odbcConnect("qbs181","cwang","cwang@qbs181")
 Demographics <-sqlQuery(myconn,"select * from Demographics")
 
-# test the number of distinct individuals and note that there are 143 patients as total.
 test1 <- sqldf("select count(distinct ID) as Count from hypertension")
 
 colnames(Demographics)
 
-# merge the tables Demographics and hypertension
 Demo_hyper <- sqldf("select A.contactid as ContactID,  A.tri_imaginecareenrollmentemailsentdate as EnrollmentEmailSentDate, A.tri_enrollmentcompletedate as EnrollmentCompleteDate, B.BPStatus, B.ObservedTime from Demographics A inner join hypertension B where A.contactid = B.ID")
 
 head(Demo_hyper,n=10L)
@@ -77,7 +62,6 @@ summary(Demo_hyper)
 #Sys.time()
 #Sys.timezone()
 
-# change the date type of dates from char to date
 Demo_hyper$EnrollmentCompleteDate <- as.Date(Demo_hyper$EnrollmentCompleteDate,format="%m/%d/%Y") 
 Demo_hyper$EnrollmentEmailSentDate <- as.Date(Demo_hyper$EnrollmentEmailSentDate,format="%m/%d/%Y") 
 
@@ -85,93 +69,80 @@ library(lubridate)
 library(dplyr)
 
 
-# Rearrange Demo_hyper group by EnrollmentCompleteDate, we can find that two ID's have missing complete dates at the end: 4B5B8DEF-B59B-E611-80EA-5065F38A19E1 and 45EA1762-05E0-E511-8122-C4346BB59854. 
-#But Only one ID miss the EnrollmentEmailSentDate: 4B5B8DEF-B59B-E611-80EA-5065F38A19E1.
-# we could use EnrollmentEmailSentDate to take the time difference
 test11 <- arrange(Demo_hyper, EnrollmentCompleteDate)
 sum(is.na(Demo_hyper$EnrollmentCompleteDate))
 
 
 
-# Working with correct century and year of ObservedTime
 test66better <- mdy(Demo_hyper$ObservedTime)
 test66 <- mdy(Demo_hyper$ObservedTime)
 Demo_hyper$ObservedTime <- as.Date(ifelse(test66 < Sys.Date(),  format(test66, "2016-%m-%d"), format(test66better,"2016-%m-%d")))
-# could not help that sometimes the ObservedTime is earlier than EnrollmentCompleteDate, and sometimes it is latter than EnrollmentCompleteDate. A flexible origin or reference is needed.
 
 
-# take the difference between EnrollmentCompleteDate and ObservedTime
+
 how_long <- interval(Demo_hyper$ObservedTime,Demo_hyper$EnrollmentCompleteDate)
 time_diff <- as.period(how_long)
 class(time_diff)
-# insert the column of time_diff into Demo_hyper
+
 library(magrittr)
 Demo_hyper%<>%mutate(TimeDiff=time_diff)
 
-# obtain the time_diff in terms of week and insert into the Demo_hyper table. 
+
 test888 <- (Demo_hyper$EnrollmentCompleteDate-Demo_hyper$ObservedTime)
 test888 <- abs(as.double(test888)/(7))
 head(test888) 
-# due to the reference date of ObservedTime, some time_diff between EnrollmentCompleteDate and ObservedTime exceed 12-week intervals. But now assume each individual is within a 12-week interval treatment.
+
 Demo_hyper%<>%mutate(Weekof = test888)
 
 head(Demo_hyper, n=10L)
 
 
-# finally, we calculate the average scores in the 12-week interval for each customer
+
 test3 <- aggregate(BPStatus~ContactID, Demo_hyper, mean)
 
 head(test3, n=10L)
 ```
 
 Question 1 (e):
-according to the table, we know that:
-if the average BPStatus is 0, then the customer only got 0 scores.
-if the average BPStatus is 1, then the customer only got 1 scores
-if the average BPStatus is between 0 and 1, the customer got 0's and 1's, which indicates that he/she got 0 at the baseline, and 1 at the 12th-week, or end of the interval.
-This is a quick way of comparing the scores: since the customer status would only go from 0 to 1 (uncontrolled to controlled). 
 ```{r}
 only.got.zero <- filter(test3,BPStatus==0)
 head(only.got.zero, n=10L)
 nrow(only.got.zero)
-#11 customers got both 0's at the baseline and follow-up scores
+
 
 only.got.one <- filter(test3,BPStatus==1)
-# 31 customers got both 1's at the baseline and follow-up scores
+
 head(only.got.one, n=10L)
 nrow(only.got.one)
 
 got.one.and.zero <- filter(test3,BPStatus<1 & BPStatus>0)
-# 101 customers got 0 at the baseline and 1 for the follow-up score
+
 head(got.one.and.zero, n=10L)
 nrow(got.one.and.zero)
 
 
-
-# or if we want to extract the scores from week 1 and week 12:
-# test how many uncontrolled-cases results in week 1, with the customers might being duplicated:
 week1.uncontrolled <- filter(Demo_hyper, Weekof<=1&BPStatus==0)
 nrow(week1.uncontrolled)
 head(week1.uncontrolled)
-#test how many distinct customers are in the uncontrolled group in week 1:
+
 week1.uncontrolled %>% distinct(ContactID)
 
 
-#similarly, we could do it for controlled cases in week 1:
+
 week1.controlled <- filter(Demo_hyper, Weekof<=1&BPStatus==1)
 nrow(week1.controlled)
 head(week1.controlled)
 week1.controlled %>% distinct(ContactID)
 
 
-# for uncontrolled cases in week 12
+
 week12.uncontrolled <- filter(Demo_hyper, Weekof>=12&BPStatus==0)
 nrow(week12.uncontrolled)
 head(week12.uncontrolled)
 week12.uncontrolled %>% distinct(ContactID)
 
 
-# for controlled cases in week 12
+
 week12.controlled <- filter(Demo_hyper, Weekof>=12&BPStatus==1)
 nrow(week12.controlled)
 head(week12.controlled)
@@ -179,35 +150,25 @@ week12.controlled %>% distinct(ContactID)
 
 ```
 
-
-Question 1 (f):
-From 1 (e), we know that 101 customers were brought from uncontrolled regime to controlled regime after 12 weeks of intervention, meaning they got 0 score at the beginning, then got 1 score at the end.
-
-
-
-
-
-
 Question 3:
 ```{r}
 Conditions <-sqlQuery(myconn,"select * from Conditions")
 TextMessages <- sqlQuery(myconn,"select * from TextMessages")
 
-# merge demographics and cnditions as Demo_Con, then merge Demo_Con and TextMessages as Demo_Con_Text
+
 Demo_Con <-merge(Demographics, Conditions, by.x="contactid", by.y = "tri_patientid")
 
 Demo_Con_Text <- merge(Demo_Con, TextMessages, by.x="contactid", by.y = "tri_contactId")
 
-# check the data type
+
 str(Demo_Con_Text$TextSentDate)
 
-# convert the data type of TextSentDate to date
+
 Demo_Con_Text$TextSentDate <- as.Date(Demo_Con_Text$TextSentDate,format="%m/%d/%y")
 summary(Demo_Con_Text)
 
 library(dplyr)
 
-# Obtain the final dataset by choosing on the latest(max) date when the text was sent, grouping by contactid
 Distinct.Demo_Con_Text <- Demo_Con_Text %>% 
                               group_by(contactid) %>% 
                               slice(which.max(TextSentDate))
