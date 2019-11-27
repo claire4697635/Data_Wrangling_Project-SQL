@@ -10,7 +10,8 @@ Overview:
 Description of subdirectories:
   
   final_project: QBS 181 final project. 
-                 Use the blood type dataset and demographics dataset to analyze the customers' blood pressure status during the 12-week interval of enrollment.
+                 Use the blood type dataset and demographics dataset to analyze the customers' blood pressure status during                    the 12-week interval of enrollment. 
+                 Merge Demographics, Conditions and TextMessages. Obtain the final dataset such that we have 1 Row per ID by                    choosing on the latest date when the text was sent written in SQL and in R.
                  
   midterm_project: QBS 181 midterm project.
                  Import the DIQ_I.xpt file, distinguish at least 5 unique data-related issues, and clean the dataset according to the issues.
