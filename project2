@@ -1,0 +1,180 @@
+
+question 1-2
+```{r}
+
+# question 1
+library(gsubfn)
+library(proto)
+library(RSQLite)
+library("RODBC")
+library("sqldf")
+library(dplyr)
+
+q()
+# question 1
+myconn<-odbcConnect("qbs181","cwang","cwang@qbs181")
+IC_phonecall<-sqlQuery(myconn,"select * from Phonecall")
+IC_phonecall$EnrollmentGroup <- NA
+IC_PhoneCall_Encounter <- sqlQuery(myconn,"select * from Phonecall_Encounter")
+IC_phonecall_temp <- sqldf("select A.*, B.EncounterCode from IC_phonecall A inner join IC_PhoneCall_Encounter B where A.tri_CustomerIdEntityReference = B.CustomerId")
+
+#colnames(IC_phonecall)
+
+
+IC_phonecall_temp$EnrollmentGroup[IC_phonecall_temp$EncounterCode==125060000] <- "Clinical Alert"
+
+IC_phonecall_temp$EnrollmentGroup[IC_phonecall_temp$EncounterCode==125060001] <- "Health Coaching "
+
+IC_phonecall_temp$EnrollmentGroup[IC_phonecall_temp$EncounterCode==125060002] <- "Technical Question"
+
+IC_phonecall_temp$EnrollmentGroup[IC_phonecall_temp$EncounterCode==125060003] <- "Administrative"
+
+IC_phonecall_temp$EnrollmentGroup[IC_phonecall_temp$EncounterCode==125060004] <- "Other"
+
+IC_phonecall_temp$EnrollmentGroup[IC_phonecall_temp$EncounterCode==125060005] <- "Lack of engagement"
+
+
+
+IC_phonecall_temp$EncounterCode <- NULL
+
+#sqlSave(myconn, IC_phonecall_temp, tablename = "cwang.Phonecall", rownames = FALSE)
+
+Phonecall <- sqlQuery(myconn,"select * from cwang.Phonecall")
+
+head(Phonecall, n=10L)
+
+
+
+
+
+
+# question 2 
+
+n_of_records <- sqlQuery(myconn, "select count(tri_CustomerIdEntityReference), EnrollmentGroup from cwang.Phonecall group by EnrollmentGroup")
+
+head(n_of_records)
+
+
+```
+
+
+question 3
+```{r}
+
+
+Callduration <- sqlQuery(myconn,"select * from CallDuration")
+phone_encounter_duration <- sqldf("select A.*, B.EncounterCode from Callduration A inner join IC_PhoneCall_Encounter B where A.tri_CustomerIdEntityReference = B.CustomerId")
+
+#sqlSave(myconn, phone_encounter_duration, tablename = "cwang.Phonecall_encounter_duration", rownames = FALSE)
+
+head(phone_encounter_duration, n=10L)
+
+```
+
+
+question 4
+```{r}
+library(stringr)
+
+
+n_of_calloutcome <- sqlQuery(myconn, "select count(tri_CustomerIDEntityReference)as Count, CallOutcome from cwang.Phonecall_encounter_duration group by CallOutcome")
+
+n_of_calloutcome$CallOutcome <- str_replace(n_of_calloutcome$CallOutcome, "1", "No response")
+
+n_of_calloutcome$CallOutcome <- str_replace(n_of_calloutcome$CallOutcome, "2", "Left voice mail")
+
+n_of_calloutcome$CallOutcome <- str_replace(n_of_calloutcome$CallOutcome, "3", "Successful")
+
+
+
+n_of_callType <- sqlQuery(myconn, "select count(tri_CustomerIDEntityReference) as Count, CallType from cwang.Phonecall_encounter_duration group by CallType")
+
+n_of_callType$CallType <- str_replace(n_of_callType$CallType, "1", "Inbound")
+
+n_of_callType$CallType <- str_replace(n_of_callType$CallType, "2", "Outbound")
+
+#sqlSave(myconn, n_of_callType, tablename = "cwang.n_of_callType", rownames = FALSE)
+
+
+#sqlSave(myconn, n_of_calloutcome, tablename = "cwang.n_of_calloutcome", rownames = FALSE)
+
+n_of_calloutcome
+n_of_callType
+
+
+
+
+phonecall_duration <- sqldf("select A.*, B.EnrollmentGroup from Callduration A inner join Phonecall B where A.tri_CustomerIDEntityReference = B.tri_CustomerIDEntityReference")
+
+find_call_enroll <- sqldf("select avg(CallDuration) as sum_duration, EnrollmentGroup from phonecall_duration group by EnrollmentGroup")
+
+head(find_call_enroll, n=10L)
+
+```
+
+
+
+question 5
+```{r}
+
+Demographics <- sqlQuery(myconn, "select * from Demographics")
+Conditions <- sqlQuery(myconn, "select * from Conditions")
+TextMessages <- sqlQuery(myconn, "select * from TextMessages")
+
+democon <- sqldf("select A.*, B.tri_name from Demographics A inner join Conditions B where A.contactid = B.tri_patientid")
+
+democontext <- sqldf("select A.*, B.SenderName, B.TextSentDate from democon A inner join TextMessages B where A.contactid = B.tri_contactid")
+
+
+
+
+#sqlSave(myconn, democontext, tablename = "cwang.democontext", rownames = FALSE)
+
+
+democontext_week1 <- sqlQuery(myconn, "select *, datepart(week, try_convert(date, TextSentDate)) as week from cwang.democontext1")
+
+
+
+democontext_group_weekly <- sqldf("select SenderName, week, count(contactid) as Countasweek from democontext_week1 group by SenderName, week")
+
+
+
+
+
+#sqlSave(myconn, democontext_group_weekly, tablename = "cwang.countoftextweekly", rownames = FALSE)
+
+
+head(democontext_group_weekly, n=10L)
+
+library(ggplot2)
+#Sys.timezone(location = UTC)
+
+ggplot(data=democontext_group_weekly,aes(x=democontext_group_weekly$week, y=democontext_group_weekly$Countasweek,color=democontext_group_weekly$SenderName))+
+  labs(subtitle="Count Per Week vs Sender Type per week", 
+       y="Count Per Week", 
+       x="Sender Type per week", 
+       title="Scatterplot", 
+       caption = "Source: cwang.countoftextweekly")+
+  geom_line()
+
+
+```
+
+
+Question 6
+
+```{r}
+democontext_condition_weekly <- sqldf("select tri_name as Chronic_condition, week, count(contactid) as Countasweek from democontext_week1 group by tri_name, week")
+
+#sqlSave(myconn, democontext_condition_weekly, tablename = "cwang.democontext_condition_weekly", rownames = FALSE)
+
+head(democontext_condition_weekly, n=10L)
+
+ggplot(data=democontext_condition_weekly,aes(x=democontext_condition_weekly$week, y=democontext_condition_weekly$Countasweek,color=democontext_condition_weekly$Chronic_condition))+
+  labs(subtitle="Count Per Week vs Chronic condition per week", 
+       y="Count Per Week", 
+       x="Chronic condition per week", 
+       title="Scatterplot", 
+       caption = "Source: cwang.democontext_condition_weekly1")+
+  geom_line()
+```
