@@ -1,0 +1,97 @@
+select * from [cwang].[Demographics_hw1]
+select top 10 * from Conditions
+
+select * into [cwang].Demographics_hw19108 from Demographics
+exec sp_rename 'cwang.Demographics_hw19108.tri_age', 'Age', 'column'
+exec sp_rename 'cwang.Demographics_hw19108.gendercode', 'genderc', 'column'
+exec sp_rename 'cwang.Demographics_hw19108.contactid', 'ID', 'column'
+exec sp_rename 'cwang.Demographics_hw19108.address1_stateorprovince', 'State', 'column'
+exec sp_rename 'cwang.Demographics_hw19108.tri_imaginecareenrollmentemailsentdate', 'EmailSentDate', 'column'
+exec sp_rename 'cwang.Demographics_hw19108.tri_enrollmentcompletedate', 'CompleteDate', 'column'
+
+alter table [cwang].Demographics_hw19108
+add DateDifference
+as datediff(d, try_convert(date, EmailSentDate), try_convert(date, CompleteDate)) 
+
+select top 10 * from [cwang].Demographics_hw19108
+
+alter table [cwang].Demographics_hw19108
+add EnrollmentStatus varchar(50)
+
+Update [cwang].Demographics_19108
+Set EnrollmentStatus = 'Complete'
+where tri_imaginecareenrollmentstatus = '167410011'
+
+Update [cwang].Demographics_hw19108
+Set EnrollmentStatus = 'EmailSent'
+where tri_imaginecareenrollmentstatus = '167410001'
+
+Update [cwang].Demographics_hw19108
+Set EnrollmentStatus = 'NonResponder'
+where tri_imaginecareenrollmentstatus = '167410004'
+
+Update [cwang].Demographics_hw19108
+Set EnrollmentStatus = 'FacilitatedEnrollment'
+where tri_imaginecareenrollmentstatus = '167410005'
+
+Update [cwang].Demographics_hw19108
+Set EnrollmentStatus = 'IncompleteEnrollment'
+where tri_imaginecareenrollmentstatus = '167410002'
+
+Update [cwang].Demographics_hw19108
+Set EnrollmentStatus = 'OptedOut'
+where tri_imaginecareenrollmentstatus = '167410003'
+
+Update [cwang].Demographics_hw19108
+Set EnrollmentStatus = 'Unprocessed'
+where tri_imaginecareenrollmentstatus = '167410000'
+
+Update [cwang].Demographics_hw19108
+Set EnrollmentStatus = 'SecondEmailsent'
+where tri_imaginecareenrollmentstatus = '167410006'
+
+select top 10 * from [cwang].Demographics_hw19108
+
+
+alter table [cwang].Demographics_hw19108
+add Sex varchar(50)
+
+update [cwang].Demographics_hw19108
+set Sex = 'FEMALE'
+where genderc = '2'
+
+update [cwang].Demographics_hw19108
+set Sex = 'Male'
+where genderc = '1'
+
+update [cwang].Demographics_hw19108
+set Sex = 'Other'
+where genderc = '167410000'
+
+update [cwang].Demographics_hw19108
+set Sex = 'Unknown'
+where genderc = 'NULL'
+
+select top 10 * from [cwang].Demographics_hw19108
+
+alter table [cwang].Demographics_hw19108
+add AgeGroup varchar(50)
+
+update [cwang].Demographics_hw19108
+set AgeGroup = '0-25'
+where Age between '0' and '25'
+
+update [cwang].Demographics_hw19108
+set AgeGroup = '26-50'
+where Age between '26' and '50'
+
+update [cwang].Demographics_hw19108
+set AgeGroup = '51-75'
+where Age between '51' and '75'
+
+update [cwang].Demographics_hw19108
+set AgeGroup = '76-90'
+where Age between '76' and '90'
+
+
+select top 10 * from [cwang].Demographics_hw19108
