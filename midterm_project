@@ -1,0 +1,375 @@
+---
+title: "midterm"
+output: html_document
+---
+```{r}
+
+library(haven)
+
+DIQ <- read_xpt("/Users/clairewang/Documents/QBS 181/DIQ_I.XPT")
+
+str(DIQ)
+
+is.na(DIQ)
+sum(is.na(DIQ$SEQN))
+sum(is.na(DIQ$DIQ010))
+sum(is.na(DIQ$DIQ050))
+
+```
+
+```{r}
+library("sqldf")
+library(dplyr)
+
+sqldf("select count(DIQ010) from DIQ where DIQ010 = 1")
+# use sqldf("select count....") to check variables with large number of counts.
+grep(pattern = "[9]", DIQ$DIQ010, value = TRUE)
+# use grep to check the variables with small number of counts.
+
+# repeat the two solutions to check the rest of all
+
+
+```
+
+
+
+
+```{r}
+
+DIQ$DID040[DIQ$DID040 == 666] <- 1
+DIQ$DID040[DIQ$DID040 == 777] <- NA
+DIQ$DID040[DIQ$DID040 == 999] <- NA
+
+mean(DIQ$DID040,na.rm = TRUE)
+DIQ$DID040[is.na(DIQ$DID040)] <- 48
+sum(is.na(DIQ$DID040))
+
+DIQ$DID060[DIQ$DID060 == 666] <- 1
+#sqldf("select DID60 from DIQ where DID60 = 777")
+DIQ$DID060[DIQ$DID060 == 999] <- NA
+mean(DIQ$DID060,na.rm = TRUE)
+DIQ$DID060[is.na(DIQ$DID060)] <- 9
+sum(is.na(DIQ$DID060))
+```
+
+
+```{r}
+DIQ$DID250[DIQ$DID250 == 9999] <- NA
+mean(DIQ$DID250,na.rm = TRUE)
+DIQ$DID250[is.na(DIQ$DID250)] <- 5
+sum(is.na(DIQ$DID250))
+
+DIQ$DID341[DIQ$DID341 == 7777] <- NA
+DIQ$DID341[DIQ$DID341 == 9999] <- NA
+mean(DIQ$DID341,na.rm = TRUE)
+DIQ$DID341[is.na(DIQ$DID341)] <- 2
+sum(is.na(DIQ$DID341))
+
+DIQ$DID350[DIQ$DID350 == 7777] <- NA
+DIQ$DID350[DIQ$DID350 == 9999] <- NA
+mean(DIQ$DID350,na.rm = TRUE)
+DIQ$DID350[is.na(DIQ$DID350)] <- 1
+sum(is.na(DIQ$DID350))
+```
+
+
+```{r}
+mean(DIQ$DID260,na.rm = TRUE)
+DIQ$DID260[is.na(DIQ$DID260)] <- 2
+sum(is.na(DIQ$DID260))
+```
+
+
+```{r}
+DIQ$DIQ280[DIQ$DIQ280 == 777] <- NA
+DIQ$DIQ280[DIQ$DIQ280 == 999] <- NA
+mean(DIQ$DIQ280,na.rm = TRUE)
+DIQ$DIQ280[is.na(DIQ$DIQ280)] <- 7.3
+sum(is.na(DIQ$DIQ280))
+
+DIQ$DIQ291[DIQ$DIQ291 == 77] <- NA
+DIQ$DIQ291[DIQ$DIQ291 == 99] <- NA
+mean(DIQ$DIQ291,na.rm = TRUE)
+DIQ$DIQ291[is.na(DIQ$DIQ291)] <- 2.39
+sum(is.na(DIQ$DIQ291))
+
+DIQ$DIQ300S[DIQ$DIQ300S == 7777] <- NA
+DIQ$DIQ300S[DIQ$DIQ300S == 9999] <- NA
+mean(DIQ$DIQ300S,na.rm = TRUE)
+DIQ$DIQ300S[is.na(DIQ$DIQ300S)] <- 130
+sum(is.na(DIQ$DIQ300S))
+
+DIQ$DIQ300D[DIQ$DIQ300D == 7777] <- NA
+DIQ$DIQ300D[DIQ$DIQ300D == 9999] <- NA
+mean(DIQ$DIQ300D,na.rm = TRUE)
+DIQ$DIQ300D[is.na(DIQ$DIQ300D)] <- 78
+sum(is.na(DIQ$DIQ300D))
+```
+
+
+```{r}
+DIQ$DID310S[DIQ$DID310S == 6666] <- 200
+DIQ$DID310S[DIQ$DID310S == 7777] <- NA
+DIQ$DID310S[DIQ$DID310S == 9999] <- NA
+mean(DIQ$DID310S, na.rm = TRUE)
+DIQ$DID310S[is.na(DIQ$DID310S)] <- 160
+sum(is.na(DIQ$DID310S))
+
+DIQ$DID310D[DIQ$DID310D == 6666] <- 200
+DIQ$DID310D[DIQ$DID310D == 7777] <- NA
+DIQ$DID310D[DIQ$DID310D == 9999] <- NA
+mean(DIQ$DID310D, na.rm = TRUE)
+DIQ$DID310D[is.na(DIQ$DID310D)] <- 138
+sum(is.na(DIQ$DID310D))
+
+DIQ$DID330[DIQ$DID330 == 6666] <- 250
+DIQ$DID330[DIQ$DID330 == 7777] <- NA
+DIQ$DID330[DIQ$DID330 == 9999] <- NA
+mean(DIQ$DID330, na.rm = TRUE)
+DIQ$DID330[is.na(DIQ$DID330)] <- 214
+sum(is.na(DIQ$DID330))
+```
+
+
+```{r}
+DIQ$DID320[DIQ$DID320 == 5555] <- 4
+DIQ$DID320[DIQ$DID320 == 6666] <- 4
+DIQ$DID320[DIQ$DID320 == 7777] <- NA
+DIQ$DID320[DIQ$DID320 == 9999] <- NA
+mean(DIQ$DID320, na.rm = TRUE)
+DIQ$DID320[is.na(DIQ$DID320)] <- 70
+sum(is.na(DIQ$DID320))
+```
+
+
+```{r}
+mean(DIQ$DIQ160,na.rm = TRUE)
+DIQ$DIQ160[is.na(DIQ$DIQ160)] <- 1.93
+sum(is.na(DIQ$DIQ160))
+
+mean(DIQ$DIQ170,na.rm = TRUE)
+DIQ$DIQ170[is.na(DIQ$DIQ170)] <- 1.88
+sum(is.na(DIQ$DIQ160))
+
+mean(DIQ$DIQ172,na.rm = TRUE)
+DIQ$DIQ172[is.na(DIQ$DIQ172)] <- 1.84
+sum(is.na(DIQ$DIQ172))
+
+mean(DIQ$DIQ180,na.rm = TRUE)
+DIQ$DIQ180[is.na(DIQ$DIQ180)] <- 1.75
+sum(is.na(DIQ$DIQ180))
+
+mean(DIQ$DIQ060U,na.rm = TRUE)
+DIQ$DIQ060U[is.na(DIQ$DIQ060U)] <- 1.88
+sum(is.na(DIQ$DIQ060U))
+
+mean(DIQ$DIQ070,na.rm = TRUE)
+DIQ$DIQ070[is.na(DIQ$DIQ070)] <- 1.58
+sum(is.na(DIQ$DIQ070))
+
+mean(DIQ$DIQ230,na.rm = TRUE)
+DIQ$DIQ230[is.na(DIQ$DIQ230)] <- 3.24
+sum(is.na(DIQ$DIQ230))
+
+mean(DIQ$DIQ240,na.rm = TRUE)
+DIQ$DIQ240[is.na(DIQ$DIQ240)] <- 1.25
+sum(is.na(DIQ$DIQ240))
+
+mean(DIQ$DIQ260U,na.rm = TRUE)
+DIQ$DIQ260U[is.na(DIQ$DIQ260U)] <- 1.58
+sum(is.na(DIQ$DIQ260U))
+
+mean(DIQ$DIQ275,na.rm = TRUE)
+DIQ$DIQ275[is.na(DIQ$DIQ275)] <- 1.71
+sum(is.na(DIQ$DIQ275))
+
+mean(DIQ$DIQ350U,na.rm = TRUE)
+DIQ$DIQ350U[is.na(DIQ$DIQ350U)] <- 1.41
+sum(is.na(DIQ$DIQ350U))
+
+mean(DIQ$DIQ360,na.rm = TRUE)
+DIQ$DIQ360[is.na(DIQ$DIQ360)] <- 2.68
+sum(is.na(DIQ$DIQ360))
+
+mean(DIQ$DIQ080,na.rm = TRUE)
+DIQ$DIQ080[is.na(DIQ$DIQ080)] <- 1.84
+sum(is.na(DIQ$DIQ080))
+
+```
+
+
+
+```{r}
+
+DIQ$DIQ175A[is.na(DIQ$DIQ175A)] <- 505
+sum(is.na(DIQ$DIQ175A))
+
+DIQ$DIQ175B[is.na(DIQ$DIQ175B)] <- 505
+sum(is.na(DIQ$DIQ175B))
+
+DIQ$DIQ175C[is.na(DIQ$DIQ175C)] <- 505
+sum(is.na(DIQ$DIQ175C))
+
+DIQ$DIQ175D[is.na(DIQ$DIQ175D)] <- 505
+sum(is.na(DIQ$DIQ175D))
+
+DIQ$DIQ175E[is.na(DIQ$DIQ175E)] <- 505
+sum(is.na(DIQ$DIQ175E))
+
+DIQ$DIQ175F[is.na(DIQ$DIQ175F)] <- 505
+sum(is.na(DIQ$DIQ175F))
+
+DIQ$DIQ175G[is.na(DIQ$DIQ175G)] <- 505
+sum(is.na(DIQ$DIQ175G))
+
+DIQ$DIQ175H[is.na(DIQ$DIQ175H)] <- 505
+sum(is.na(DIQ$DIQ175H))
+
+DIQ$DIQ175I[is.na(DIQ$DIQ175I)] <- 505
+sum(is.na(DIQ$DIQ175I))
+
+DIQ$DIQ175J[is.na(DIQ$DIQ175J)] <- 505
+sum(is.na(DIQ$DIQ175J))
+
+DIQ$DIQ175K[is.na(DIQ$DIQ175K)] <- 505
+sum(is.na(DIQ$DIQ175K))
+
+DIQ$DIQ175L[is.na(DIQ$DIQ175L)] <- 505
+sum(is.na(DIQ$DIQ175L))
+
+DIQ$DIQ175M[is.na(DIQ$DIQ175M)] <- 505
+sum(is.na(DIQ$DIQ175M))
+
+DIQ$DIQ175N[is.na(DIQ$DIQ175N)] <- 505
+sum(is.na(DIQ$DIQ175N))
+
+DIQ$DIQ175O[is.na(DIQ$DIQ175O)] <- 505
+sum(is.na(DIQ$DIQ175O))
+
+DIQ$DIQ175P[is.na(DIQ$DIQ175P)] <- 505
+sum(is.na(DIQ$DIQ175P))
+
+DIQ$DIQ175Q[is.na(DIQ$DIQ175Q)] <- 505
+sum(is.na(DIQ$DIQ175Q))
+
+DIQ$DIQ175R[is.na(DIQ$DIQ175R)] <- 505
+sum(is.na(DIQ$DIQ175R))
+
+DIQ$DIQ175S[is.na(DIQ$DIQ175S)] <- 505
+sum(is.na(DIQ$DIQ175S))
+
+DIQ$DIQ175T[is.na(DIQ$DIQ175T)] <- 505
+sum(is.na(DIQ$DIQ175T))
+
+DIQ$DIQ175U[is.na(DIQ$DIQ175U)] <- 505
+sum(is.na(DIQ$DIQ175U))
+
+DIQ$DIQ175V[is.na(DIQ$DIQ175V)] <- 505
+sum(is.na(DIQ$DIQ175V))
+
+DIQ$DIQ175W[is.na(DIQ$DIQ175W)] <- 505
+sum(is.na(DIQ$DIQ175W))
+
+DIQ$DIQ175X[is.na(DIQ$DIQ175X)] <- 505
+sum(is.na(DIQ$DIQ175X))
+
+```
+
+
+
+
+```{r}
+DIQ$DIQ010 <- factor(DIQ$DIQ010)
+str(DIQ)
+
+DIQ$DIQ160 <- factor(DIQ$DIQ160)
+
+DIQ$DIQ170 <- factor(DIQ$DIQ170)
+
+DIQ$DIQ172 <- factor(DIQ$DIQ172)
+
+DIQ$DIQ175A <- factor(DIQ$DIQ175A)
+
+DIQ$DIQ175B <- factor(DIQ$DIQ175B)
+
+DIQ$DIQ175C <- factor(DIQ$DIQ175C)
+
+DIQ$DIQ175D <- factor(DIQ$DIQ175D)
+
+DIQ$DIQ175E <- factor(DIQ$DIQ175E)
+
+DIQ$DIQ175F <- factor(DIQ$DIQ175F)
+
+DIQ$DIQ175G <- factor(DIQ$DIQ175G)
+
+DIQ$DIQ175H <- factor(DIQ$DIQ175H)
+
+DIQ$DIQ175I <- factor(DIQ$DIQ175I)
+
+DIQ$DIQ175J <- factor(DIQ$DIQ175J)
+
+DIQ$DIQ175K <- factor(DIQ$DIQ175K)
+
+DIQ$DIQ175L <- factor(DIQ$DIQ175L)
+
+DIQ$DIQ175M <- factor(DIQ$DIQ175M)
+
+DIQ$DIQ175N <- factor(DIQ$DIQ175N)
+
+DIQ$DIQ175O <- factor(DIQ$DIQ175O)
+
+DIQ$DIQ175P <- factor(DIQ$DIQ175P)
+
+DIQ$DIQ175Q <- factor(DIQ$DIQ175Q)
+
+DIQ$DIQ175R <- factor(DIQ$DIQ175R)
+
+DIQ$DIQ175S <- factor(DIQ$DIQ175S)
+                      
+DIQ$DIQ175T <- factor(DIQ$DIQ175T)
+
+DIQ$DIQ175U <- factor(DIQ$DIQ175U)
+
+DIQ$DIQ175V <- factor(DIQ$DIQ175V)
+
+DIQ$DIQ175W <- factor(DIQ$DIQ175W)
+
+DIQ$DIQ175X <- factor(DIQ$DIQ175X)
+
+DIQ$DIQ180 <- factor(DIQ$DIQ180)
+
+DIQ$DIQ050 <- factor(DIQ$DIQ050)
+
+DIQ$DIQ060U <- factor(DIQ$DIQ060U)
+
+DIQ$DIQ070 <- factor(DIQ$DIQ070)
+
+DIQ$DIQ230 <- factor(DIQ$DIQ230)
+
+DIQ$DIQ240 <- factor(DIQ$DIQ240)
+
+DIQ$DIQ260U <- factor(DIQ$DIQ260U)
+
+DIQ$DIQ275 <- factor(DIQ$DIQ275)
+
+DIQ$DIQ291 <- factor(DIQ$DIQ291)
+
+DIQ$DIQ350U <- factor(DIQ$DIQ350U)
+
+DIQ$DIQ360 <- factor(DIQ$DIQ360)
+
+DIQ$DIQ080 <- factor(DIQ$DIQ080)
+
+str(DIQ)
+                      
+```
+
+
+```{r}
+head(DIQ)
+#library("RODBC")
+#myconn<-odbcConnect("qbs181","cwang","cwang@qbs181")
+#sqlSave(myconn, DIQ, tablename = "cwang.DIQ_Midterm", rownames = FALSE)
+
+
+```
