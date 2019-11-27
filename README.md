@@ -1,13 +1,13 @@
-Data Wrangling Projects and Tasks
+#Data Wrangling Projects and Tasks
 
 
-Overview:
+##Overview:
 
   The repository includes two projects (hw1 and hw2), midterm project, and final project.
   I have received permission from the instructor to make my work public
 
 
-Description of subdirectories:
+##Description of subdirectories:
   
   final_project: QBS 181 final project. 
                  Use the blood type dataset and demographics dataset to analyze the customers' blood pressure status during                    the 12-week interval of enrollment. 
