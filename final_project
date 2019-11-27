@@ -150,6 +150,37 @@ week12.controlled %>% distinct(ContactID)
 
 ```
 
+
+Question 2:
+
+select A.*, B.tri_name 
+into  [cwang].Demo_con
+from Demographics A 
+inner join Conditions B
+on A.contactid = B.tri_patientid
+
+select A.*, B.SenderName, convert(datetime, B.TextSentDate) as TextSentDate
+into [cwang].Demo_con_text1
+from [cwang].Demo_con A 
+inner join TextMessages B 
+on A.contactid = B.tri_contactId
+
+select * from [cwang].Demo_con_text1
+
+
+select ContactId, max(gendercode) as GenderCode, max(tri_age) as Age, max(parentcustomeridname) as ParentCustomerIdName, 
+max(tri_imaginecareenrollmentstatus) as ImagineCareEnrollmentStatus, max(address1_stateorprovince) as Address_StateOrProvince, max(tri_imaginecareenrollmentemailsentdate) as ImagineCareEnrollmentEmailSentDate,
+max(tri_enrollmentcompletedate) as EnrollmentCompletedate, max(gender) as Gender, max(Gender_Name) as GenderName,max(tri_name) as TrialName, max(SenderName) as SenderName,
+max(TextSentDate) as TextSentDate
+into [cwang].Demo_con_text3
+from [cwang].Demo_con_text1
+group by contactid
+
+select * from [cwang].Demo_con_text3
+
+
+
+
 Question 3:
 ```{r}
 Conditions <-sqlQuery(myconn,"select * from Conditions")
