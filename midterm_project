@@ -22,11 +22,8 @@ library("sqldf")
 library(dplyr)
 
 sqldf("select count(DIQ010) from DIQ where DIQ010 = 1")
-# use sqldf("select count....") to check variables with large number of counts.
-grep(pattern = "[9]", DIQ$DIQ010, value = TRUE)
-# use grep to check the variables with small number of counts.
 
-# repeat the two solutions to check the rest of all
+grep(pattern = "[9]", DIQ$DIQ010, value = TRUE)
 
 
 ```
