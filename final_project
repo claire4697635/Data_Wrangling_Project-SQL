@@ -35,7 +35,6 @@ head(hypertension,n=10L)
 
 Question 1 (c):
 ```{r}
-
 library(RODBC)
 library(sqldf)
 
